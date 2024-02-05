@@ -118,12 +118,21 @@ bool CartesianPoseImpedanceController::init(hardware_interface::RobotHW* robot_h
   cartesian_stiffness_target_.setIdentity();
   cartesian_damping_target_.setIdentity();
   std::vector<double> cartesian_stiffness_target_yaml;
-  if (!node_handle.getParam("cartesian_stiffness_target", cartesian_stiffness_target_yaml) || cartesian_stiffness_target_yaml.size() != 6) {
+  if (!node_handle.getParam("cartesian_stiffness_target", cartesian_stiffness_target_yaml) ) {
     ROS_ERROR(
-      "CartesianPoseImpedanceController: Invalid or no cartesian_stiffness_target_yaml parameters provided, "
-      "aborting controller init!");
+      "CartesianPoseImpedanceController: No cartesian_stiffness_target_yaml parameters provided, "
+      "aborting controller init!"
+      );
     return false;
   }
+  else if (cartesian_stiffness_target_yaml.size() != 6){
+    ROS_ERROR(
+      "CartesianPoseImpedanceController: Invalid cartesian_stiffness_target_yaml parameters provided, "
+      "aborting controller init!"
+      );
+    return false;
+  }
+
   for (int i = 0; i < 6; i ++) {
     cartesian_stiffness_target_(i,i) = cartesian_stiffness_target_yaml[i];
   }

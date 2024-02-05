@@ -3,7 +3,7 @@
 
   <!-- Gazebo & GUI Configuration -->
   <arg name="gazebo"      default="true"  doc="Should the gazebo simulation be launched? Use false in case if you want to include this file and launch gazebo yourself" />
-  <arg name="headless"    default="true" doc="Should the gazebo GUI be launched?" />
+  <arg name="headless"    default="false" doc="Should the gazebo GUI be launched?" />
   <arg name="paused"      default="false" doc="Should the simulation directly be stopped at 0s?" />
   <arg name="world"       default="worlds/empty.world" doc="Filename to a SDF World for gazebo to use" />
   <arg name="rviz"        default="true" doc="Should RVIz be launched?" />
@@ -11,7 +11,7 @@
   <!-- Robot Customization -->
   <arg name="arm_id"      default="panda" doc="Name of the panda robot to spawn" />
   <arg name="use_gripper" default="true"  doc="Should a franka hand be mounted on the flange?" />
-  <arg name="controller"  default="passiveDS_impedance"   doc="Which controller should be started? (One of {cartesian_pose, cartesian_twist, passiveDS}_impedance_controller )" />
+  <arg name="controller"  default="cartesian_pose_impedance_controller"   doc="Which controller should be started? (One of {cartesian_pose, cartesian_twist, passiveDS}_impedance_controller )" />
   <arg name="x"           default="0"     doc="How far forward to place the base of the robot in [m]?" />
   <arg name="y"           default="0"     doc="How far leftwards to place the base of the robot in [m]?" />
   <arg name="z"           default="0"     doc="How far upwards to place the base of the robot in [m]?" />
@@ -41,7 +41,7 @@
   </include>
 
   <param name="robot_description"
-         command="xacro $(find franka_description)/robots/panda_arm.urdf.xacro
+         command="xacro $(find franka_description)/robots/panda/panda.urdf.xacro
                   gazebo:=true
                   hand:=$(arg use_gripper)
                   arm_id:=$(arg arm_id)
@@ -50,9 +50,9 @@
                   $(arg xacro_args)">
   </param>
 
+  <!-- <rosparam file="$(find franka_gazebo)/config/sim_controllers.yaml" subst_value="true" /> -->
   <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
   <rosparam file="$(find franka_interactive_controllers)/config/franka_interactive_sim_controllers.yaml" subst_value="true" />
-  <!-- <rosparam file="$(find franka_gazebo)/config/sim_controllers.yaml" subst_value="true" /> -->
 
   <param name="m_ee" value="0.76" if="$(arg use_gripper)" />
 
@@ -112,5 +112,8 @@
   <!-- Start only if passive_ds_impedance_controller is set in "controller"-->
   <include file="$(find franka_interactive_controllers)/launch/passiveDS_impedance_controller.launch" if="$(eval arg('controller') == 'passiveDS_impedance')">
   </include>
+
+  
+  <rosparam file="$(find franka_interactive_controllers)/config/pose_impedance_control_additional_params.yaml" subst_value="true" />
 
 </launch>
