@@ -74,12 +74,7 @@
   />
 
   <!-- spawns the controller after the robot was put into its initial joint pose -->
-  <node pkg="controller_manager"
-        type="spawner"
-        name="$(arg arm_id)_controller_spawner"
-        respawn="false" output="screen"
-        args="--wait-for initialized franka_state_controller $(arg controller)"
-  />
+
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher">
     <rosparam param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
@@ -88,7 +83,6 @@
 
   <!-- Bring up rqt_reconfigure to modify values -->
   <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" required="false" />
-
 
   <!-- Convert franka state of EE to Geometry Message PoseStamped!! -->  
   <node name="franka_to_geometry_messages" pkg="franka_interactive_controllers" type="franka_to_geometry_messages.py" respawn="false" output="screen"/>
@@ -100,20 +94,15 @@
   <node  pkg="rviz" type="rviz" output="screen" name="rviz" args="-d $(find franka_interactive_controllers)/launch/rviz/franka_description.rviz" if="$(arg rviz)"/>
 
   <!-- Start only if cartesian_pose_impedance_controller is set in "controller"-->
-  <include file="$(find franka_interactive_controllers)/launch/cartesian_pose_impedance_controller.launch" 
-    if="$(eval arg('controller') == 'cartesian_pose_impedance')">
+  <include file="$(find franka_interactive_controllers)/launch/cartesian_pose_impedance_controller.launch" if="$(eval arg('controller') == 'cartesian_pose_impedance_controller')">
   </include>
 
-
   <!-- Start only if cartesian_twist_impedance_controller is set in "controller"-->
-  <include file="$(find franka_interactive_controllers)/launch/cartesian_twist_impedance_controller.launch" if="$(eval arg('controller') == 'cartesian_twist_impedance')">
+  <include file="$(find franka_interactive_controllers)/launch/cartesian_twist_impedance_controller.launch" if="$(eval arg('controller') == 'cartesian_twist_impedance_controller')">
   </include>
 
   <!-- Start only if passive_ds_impedance_controller is set in "controller"-->
-  <include file="$(find franka_interactive_controllers)/launch/passiveDS_impedance_controller.launch" if="$(eval arg('controller') == 'passiveDS_impedance')">
+  <include file="$(find franka_interactive_controllers)/launch/passiveDS_impedance_controller.launch" if="$(eval arg('controller') == 'passiveDS_impedance_controller')">
   </include>
-
-  
-  <rosparam file="$(find franka_interactive_controllers)/config/pose_impedance_control_additional_params.yaml" subst_value="true" />
 
 </launch>
